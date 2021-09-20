@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
@@ -10,6 +10,9 @@ metadata:
   name: {{ .Values.domain }}
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: {{ .Values.domain }}
   strategy:
     type: Recreate
   template:
@@ -42,7 +45,7 @@ spec:
           value: {{ .Values.env.ORDERER_GENERAL_TLS_PRIVATEKEY }}
         - name: ORDERER_GENERAL_TLS_ROOTCAS
           value: "{{ .Values.env.ORDERER_GENERAL_TLS_ROOTCAS }}"
-        image: hyperledger/fabric-orderer:latest
+        image: hyperledger/fabric-orderer:1.4.4
         name: {{ .Values.domain }}
         ports:
         - containerPort: 7050

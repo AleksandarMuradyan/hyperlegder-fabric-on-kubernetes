@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
@@ -10,6 +10,9 @@ metadata:
   name: {{ .Values.orgName }}-cli
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: {{ .Values.domain }}-cli
   strategy:
     type: Recreate
   template:
@@ -81,7 +84,7 @@ spec:
           value: "{{ .Values.cryptoBasePath }}/peerOrganizations/{{ .Values.orgDomain }}/peers/{{ .Values.corePeer }}-{{ .Values.orgDomain }}/tls/ca.crt"
         - name: CORE_PEER_MSPCONFIGPATH
           value: "{{ .Values.cryptoBasePath }}/peerOrganizations/{{ .Values.orgDomain }}/users/Admin@{{ .Values.orgDomain }}/msp"
-        image: hyperledger/fabric-tools:latest
+        image: hyperledger/fabric-tools:1.4.4
         name: cli
         resources: {}
         stdin: true

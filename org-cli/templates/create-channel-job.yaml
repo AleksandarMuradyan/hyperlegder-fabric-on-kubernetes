@@ -73,7 +73,7 @@ spec:
           value: "{{ .Values.cryptoBasePath }}/peerOrganizations/{{ .Values.orgDomain }}/peers/{{ .Values.corePeer }}-{{ .Values.orgDomain }}/tls/ca.crt"
         - name: CORE_PEER_MSPCONFIGPATH
           value: "{{ .Values.cryptoBasePath }}/peerOrganizations/{{ .Values.orgDomain }}/users/Admin@{{ .Values.orgDomain }}/msp"
-        image: hyperledger/fabric-tools:latest
+        image: hyperledger/fabric-tools:1.4.4
         name: channel-creation
         resources: {}
         stdin: true

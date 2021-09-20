@@ -19,7 +19,7 @@ def set_nfs_volume():
   nfsClusterIP = subprocess.check_output("kubectl get svc nfs-server --namespace=peers -o=jsonpath={.spec.clusterIP}", shell=True)
 
   puts("INFO: Creating PVC for public certificates..")
-  helmCmd = ("helm install --name=public-certs-pvc ./public-certs-pvc --namespace=peers"
+  helmCmd = ("helm install public-certs-pvc ./public-certs-pvc peers"
   " --set nfs.clusterIP=%s" %nfsClusterIP)
   os.system(helmCmd)
   exec_when_pod_up("kubectl exec public-certs-injector-pod --namespace=peers -- ls /etc/hyperledger")

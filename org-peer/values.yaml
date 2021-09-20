@@ -62,7 +62,7 @@ fabricpeer:
     ## If unset or "", use "default" storage class.
     storageClass: ""
     accessMode: ReadWriteOnce
-    size: 1Gi
+    size: 10Gi
   caAddress: hlf-ca.local
   ## Username for registering/enrolling with CA
   caUsername: peer1

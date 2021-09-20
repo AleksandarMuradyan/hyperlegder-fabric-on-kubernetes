@@ -20,11 +20,14 @@ def set_org_peer_pods(namespace, orgPeers, domain, orgName):
 
 def create_fabric_peer_pod(peer, org, domain, orgPeers, orgName):
   gossipPeer = [p for p in orgPeers if p['Hostname'] != peer['Hostname']][0]
-  env = ("--set hlfpeer.orgname=%s --set hlfpeer.peername=%s "
+  env = ("--set useHelm3=true --set hlfpeer.orgname=%s --set hlfpeer.peername=%s "
     "--set hlfpeer.orgdomain=%s --set hlfpeer.gossipPeer=%s "
     "--set hlfpeer.peerOrgName=%s" %(org, peer['Hostname'], domain, gossipPeer['Hostname'], orgName)
   )
-  cmd = "helm install --name=%s ./org-peer --namespace=peers %s" %(peer['CommonName'], env)
+  cmd = "helm install %s --namespace=peers %s ./org-peer" %(peer['CommonName'], env)
+ #orig cmd = "helm install --name=%s ./org-peer --namespace=peers %s" %(peer['CommonName'], env)
+ #cmd = "helm install %s --namespace=%s ./orderer --set useHelm3=true" %(domain, namespace)
+  print(cmd)
   os.system(cmd)
 
 def create_cert_secrets(peer, namespace, domain):
@@ -41,9 +44,12 @@ def create_cert_secrets(peer, namespace, domain):
 def set_org_cli(namespace, org, orderer):
   domain = org['Domain']
   # create persistent volume claims for CLI
-  res = os.system("helm install --name=cli-%s-pvc ./org-cli-pvc"
+  res = os.system("helm install cli-%s-pvc ./org-cli-pvc"
     " --set orgname=%s --set ordDomain=%s --set ordNamespace=%s "
     "--namespace=peers" %(namespace, namespace, orderer['Specs'][0]['CommonName'], "peers")
+  #res = os.system("helm install --name=cli-%s-pvc ./org-cli-pvc"
+    #" --set orgname=%s --set ordDomain=%s --set ordNamespace=%s "
+    #"--namespace=peers" %(namespace, namespace, orderer['Specs'][0]['CommonName'], "peers")
   )
   if res != 0:
     return
@@ -72,9 +78,9 @@ def set_org_cli(namespace, org, orderer):
   # delete the temporary injector pod
   os.system("kubectl delete pod %s-cli-injector-pod --namespace=peers" %namespace)
   # Setting up actual CLI pod
-  os.system(("helm install --name=cli-%s ./org-cli --set orgName=%s "
+  os.system(("helm install cli-%s ./org-cli --set orgName=%s "
     "--set orgDomain=%s --set corePeer=peer0 --set peerOrgName=%s "
-    "--namespace=peers" %(namespace, namespace, domain, org['Name'])))
+    "peers" %(namespace, namespace, domain, org['Name'])))
   return
 
 

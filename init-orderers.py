@@ -18,7 +18,12 @@ def set_orderer_pvc(orderer, domain):
 def create_orderer_pod(domain):
   puts("INFO: Creating orderer Pod")
   env = ("--set domain=%s" %domain)
-  cmd = "helm install --name=%s ./orderer --namespace=%s %s" %(domain, namespace, env)
+  cmd = "helm install %s --namespace=%s ./orderer --set useHelm3=true %s" %(domain, namespace, env)
+  #original- cmd = "helm install --name=%s ./orderer --namespace=%s %s" %(domain, namespace, env)
+  #cmd = "helm install %s ./orderer --namespace=%s %s" %(domain, namespace, env)
+  #cmd = "helm install %s ./orderer %s %s" %(domain, namespace, env)
+  #cmd = "helm install %s %s ./orderer" %(domain, namespace)
+  print (cmd)
   return os.system(cmd)
 
 def create_cert_secrets(domain, ordDomain, ordererDir):

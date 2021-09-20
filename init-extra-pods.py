@@ -12,7 +12,7 @@ def set_extra_pods(namespace, extraPods):
   puts("%s : Creating Extra Pods.." %namespace)
   for p in extraPods:
     env = ' '.join(map(lambda x: "--set %s=%s" %(x['name'], x['value']), p['Values']))
-    extraPodHelmCmd = "helm install --name=%s %s --namespace=peers %s" %(p['Name'], p['Chart'], env)
+    extraPodHelmCmd = "helm install %s %s %s" %(p['Name'], p['Chart'], env)
     puts(extraPodHelmCmd)
     os.system(extraPodHelmCmd)
   return

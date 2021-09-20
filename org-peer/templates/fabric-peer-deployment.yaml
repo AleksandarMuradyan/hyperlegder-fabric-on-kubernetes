@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
@@ -10,6 +10,9 @@ metadata:
   name: "{{ .Values.hlfpeer.peername }}-{{ .Values.hlfpeer.orgdomain }}"
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      service: "{{ .Values.hlfpeer.peername }}-{{ .Values.hlfpeer.orgdomain }}"
   strategy:
     type: Recreate
   template:
@@ -26,9 +29,9 @@ spec:
           echo "======= WAITING FOR VOLUMES TO BE UP ===="
           sleep 5
           echo "======= EXTRACTING CERTS ======="
-          tar -xvf /etc/hyperledger/fabric/msp.tar
-          tar -xvf /etc/hyperledger/fabric/tls.tar
-          rm /etc/hyperledger/fabric/msp.tar /etc/hyperledger/fabric/tls.tar
+          tar -xvf /etc/hyperledger/fabric/msp/msp.tar
+          tar -xvf /etc/hyperledger/fabric/tls/tls.tar
+          rm /etc/hyperledger/fabric/msp/msp.tar /etc/hyperledger/fabric/tls/tls.tar
           echo "======= STARTING PEER ======="
           peer node start
           /bin/bash
@@ -73,7 +76,7 @@ spec:
           value: "{{ .Values.hlfpeer.gossipPeer }}-{{ .Values.hlfpeer.orgdomain }}:7051"
         - name: CORE_PEER_ID
           value: "{{ .Values.hlfpeer.peername }}-{{ .Values.hlfpeer.orgdomain }}"
-        image: hyperledger/fabric-peer:latest
+        image: hyperledger/fabric-peer:1.4.4
         name: "{{ .Values.hlfpeer.peername }}-{{ .Values.hlfpeer.orgdomain }}"
         ports:
         - containerPort: 7051
@@ -82,10 +85,10 @@ spec:
         volumeMounts:
         - mountPath: /host/var/run/
           name: "{{ .Values.hlfpeer.peername }}-{{ .Values.hlfpeer.orgdomain }}-claim0"
-        - mountPath: /etc/hyperledger/fabric
+        - mountPath: /etc/hyperledger/fabric/msp
           name: "{{ .Values.hlfpeer.peername }}-{{ .Values.hlfpeer.orgdomain }}-msp-claim"
           readOnly: false
-        - mountPath: /etc/hyperledger/fabric
+        - mountPath: /etc/hyperledger/fabric/tls
           name: "{{ .Values.hlfpeer.peername }}-{{ .Values.hlfpeer.orgdomain }}-tls-claim"
           readOnly: false
         - mountPath: /var/hyperledger/production
